@@ -11,6 +11,8 @@
 #define GATEWARE_DISABLE_GRASTERSURFACE // we have another template for this
 // With what we want & what we don't defined we can include the API
 #include "../gateware/Gateware.h"
+#include <iostream>
+#include "h2bParser.h"
 #include "renderer.h" // example rendering code (not Gateware code!)
 // open some namespaces to compact the code a bit
 using namespace GW;
@@ -20,10 +22,12 @@ using namespace GRAPHICS;
 // lets pop a window and use OpenGL to render to a window
 int main()
 {
+	std::string levelFile = "../GameLevel.txt";
 	GWindow win;
 	GEventResponder msgs;
 	GOpenGLSurface ogl;
-	if (+win.Create(0, 0, 800, 600, GWindowStyle::WINDOWEDBORDERED))
+
+	if (+win.Create(0, 0, 1280, 720, GWindowStyle::WINDOWEDBORDERED))
 	{
 		win.SetWindowName("Pedro Colon - Level Renderer - OpenGL");
 		float clr[] = { 48 / 255.0f, 90 / 255.0f, 150 / 255.0f, 1 }; // DONE: Part 1a
@@ -35,7 +39,7 @@ int main()
 		win.Register(msgs);
 		if (+ogl.Create(win, GW::GRAPHICS::DEPTH_BUFFER_SUPPORT))
 		{
-			Renderer renderer(win, ogl);
+			Renderer renderer(win, ogl, levelFile);
 			while (+win.ProcessWindowEvents())
 			{
 				glClearColor(clr[0], clr[1], clr[2], clr[3]);

@@ -1,6 +1,6 @@
 // minimalistic code to draw a single triangle, this is not part of the API.
-// DONE: Part 1b
-#include "FSLogo.h"
+#include "column_1.h"
+
 // Simple Vertex Shader
 const char* vertexShaderSource = nullptr;
 // Simple Fragment Shader
@@ -34,9 +34,12 @@ class Renderer
 	// DONE: Part 2a
 	GW::MATH::GMatrix gMatrix;
 	GW::MATH::GMATRIXF worldMatrix[2] = { GW::MATH::GIdentityMatrixF, GW::MATH::GIdentityMatrixF };
+	std::vector<GW::MATH::GMATRIXF> allMatrices;
 	GW::MATH::GMATRIXF viewMatrix = GW::MATH::GIdentityMatrixF;
 	GW::MATH::GMATRIXF projMatrix = GW::MATH::GIdentityMatrixF;
 	std::chrono::steady_clock::time_point startTime;
+
+	H2B::Parser readModelData;
 
 	float delta = 0;
 	// DONE: Part 2b
@@ -49,6 +52,35 @@ class Renderer
 		OBJ_ATTRIBUTES material;
 	};
 	UBO_DATA ubo;
+
+	void LoadLevel(std::string levelFile)
+	{
+		std::string getString = "";
+		std::ifstream file;
+		file.open(levelFile);
+		if (file.is_open())
+		{
+			while (!file.eof())
+			{
+				getline(file, getString);
+				if (getString == "LIGHT")
+				{
+
+				}
+
+				if (getString == "CAMERA")
+				{
+
+				}
+
+				if (getString == "MESH")
+				{
+					//std::scanf();
+				}
+				std::cout << getString << "\n";
+			}
+		}
+	}
 
 	// Load a shader file as a string of characters.
 	std::string ShaderAsString(const char* shaderFilePath) {
@@ -66,10 +98,12 @@ class Renderer
 	}
 
 public:
-	Renderer(GW::SYSTEM::GWindow _win, GW::GRAPHICS::GOpenGLSurface _ogl)
+	Renderer(GW::SYSTEM::GWindow _win, GW::GRAPHICS::GOpenGLSurface _ogl, std::string levelFile)
 	{
 		win = _win;
 		ogl = _ogl;
+		LoadLevel(levelFile);
+
 		// DONE: part 2a
 		gMatrix.Create();
 
@@ -96,7 +130,7 @@ public:
 		GW::MATH::GVECTORF sunAmbRatio = { 25 / 255.f, 25 / 255.f, 35 / 255.f };
 
 		// DONE: Part 2b
-		ubo = { lightDirection, lightColors, sunAmbRatio, eye, viewMatrix, projMatrix, worldMatrix[0], FSLogo_materials[0].attrib };
+		ubo = { lightDirection, lightColors, sunAmbRatio, eye, viewMatrix, projMatrix, worldMatrix[0], column_1_materials[0].attrib };
 
 		std::string pixelShader = ShaderAsString("../Pixelshader.glsl");
 		std::string vertShader = ShaderAsString("../Vertexshader.glsl");
@@ -110,38 +144,32 @@ public:
 		glEnable(GL_DEBUG_OUTPUT);
 		glDebugMessageCallback(MessageCallback, 0);
 #endif
-		// DONE: Part 1c
 		// Create Vertex Buffer
+		if (readModelData.Parse("../column_1.h2b"))
+		{
+			// DONE: Part 1g
+			glGenVertexArrays(1, &vertexArray);
+			glGenBuffers(1, &vertexBufferObject);
+			glGenBuffers(1, &elementBufferObject);
+			glGenBuffers(1, &uniformBufferObject);
+			glBindVertexArray(vertexArray);
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(OBJ_VERT) * readModelData.vertexCount, readModelData.vertices.data(), GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * readModelData.indexCount, readModelData.indices.data(), GL_STATIC_DRAW);
+			glBindBuffer(GL_UNIFORM_BUFFER, uniformBufferObject);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(UBO_DATA), &ubo, GL_DYNAMIC_DRAW);
+			// Vertices
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ_VERT), (void*)0);
+			glEnableVertexAttribArray(0);
+			// UVW
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ_VERT), (void*)(sizeof(float) * 3));
+			glEnableVertexAttribArray(1);
+			// Normals
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(OBJ_VERT), (void*)(sizeof(float) * 6));
+			glEnableVertexAttribArray(2);
+		}
 
-		// Base triangle test
-		float verts[] = {
-			   0,   0.5f,
-			 0.5f, -0.5f,
-			-0.5f, -0.5f
-		};
-
-		// DONE: Part 1g
-		glGenVertexArrays(1, &vertexArray);
-		glGenBuffers(1, &vertexBufferObject);
-		glGenBuffers(1, &elementBufferObject);
-		glGenBuffers(1, &uniformBufferObject);
-		glBindVertexArray(vertexArray);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(OBJ_VERT) * FSLogo_vertexcount, &FSLogo_vertices, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * FSLogo_indexcount, &FSLogo_indices, GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, uniformBufferObject);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(UBO_DATA), &ubo, GL_DYNAMIC_DRAW);
-		// Vertices
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ_VERT), (void*)0);
-		glEnableVertexAttribArray(0);
-		// UVW
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(OBJ_VERT), (void*)(sizeof(float) * 3));
-		glEnableVertexAttribArray(1);
-		// Normals
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_TRUE, sizeof(OBJ_VERT), (void*)(sizeof(float) * 6));
-		glEnableVertexAttribArray(2);
-		// DONE: Part 2c
 		// Create Vertex Shader
 		vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -175,9 +203,9 @@ public:
 			std::cout << errors << std::endl;
 		}
 	}
+
 	void Render()
 	{
-		// DONE: Part 2a
 		// setup the pipeline
 		// DONE: Part 1e
 		glBindBuffer(GL_UNIFORM_BUFFER, uniformBufferObject);
@@ -193,30 +221,25 @@ public:
 		glBindBufferBase(GL_UNIFORM_BUFFER, index, uniformBufferObject);
 		// DONE: Part 2g
 		glUniformBlockBinding(shaderExecutable, index, 0);
-		// DONE: Part 3b
-			// DONE: Part 4d
-			// DONE: Part 3c
-			// DONE: Part 4e
-		// Renders Logo
+		
 		GLvoid* secPtr = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-		// Get time delta to rotate our logo
+		//// Get time delta to rotate our logo
 		std::chrono::steady_clock::time_point endTime(std::chrono::steady_clock::now());
 		delta = std::chrono::duration_cast<std::chrono::duration<float>>(endTime - startTime).count();
 		gMatrix.RotateYLocalF(worldMatrix[0], 1.f * delta, worldMatrix[0]);
-		ubo.material = FSLogo_materials[1].attrib;
-		ubo.world = worldMatrix[0];
+		ubo.material = column_1_materials[1].attrib;
+		ubo.world = worldMatrix[1];
 		memcpy(secPtr, &ubo, sizeof(UBO_DATA));
 		startTime = std::chrono::steady_clock::now();
 		glUnmapBuffer(GL_UNIFORM_BUFFER);
-		glDrawElements(GL_TRIANGLES, FSLogo_meshes[1].indexCount, GL_UNSIGNED_INT, (void*)(FSLogo_meshes[1].indexOffset * sizeof(unsigned)));
+		glDrawElements(GL_TRIANGLES, column_1_meshes[1].indexCount, GL_UNSIGNED_INT, (void*)(column_1_meshes[1].indexOffset * sizeof(unsigned)));
 
-		// Renders Full Sail University
 		GLvoid* firPtr = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-		ubo.material = FSLogo_materials[0].attrib;
+		ubo.material = column_1_materials[0].attrib;
 		ubo.world = worldMatrix[1];
 		memcpy(firPtr, &ubo, sizeof(UBO_DATA));
 		glUnmapBuffer(GL_UNIFORM_BUFFER);
-		glDrawElements(GL_TRIANGLES, FSLogo_meshes[0].indexCount, GL_UNSIGNED_INT, (void*)(FSLogo_meshes[0].indexOffset * sizeof(unsigned)));
+		glDrawElements(GL_TRIANGLES, column_1_meshes[0].indexCount, GL_UNSIGNED_INT, (void*)(column_1_meshes[0].indexOffset * sizeof(unsigned)));
 
 
 		// some video cards(cough Intel) need this set back to zero or they won't display
