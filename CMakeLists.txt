@@ -16,7 +16,7 @@ if (UNIX AND NOT APPLE)
      link_libraries(${OPENGL_LIBRARIES})
 endif()
 
-add_executable (LevelRendererOGL main.cpp renderer.h model.h h2bParser.h FSLogo.h column_1.h ../VertexShader.glsl ../PixelShader.glsl)
+add_executable (LevelRendererOGL main.cpp renderer.h HelperFunctions.h model.h h2bParser.h FSLogo.h column_1.h ../VertexShader.glsl ../PixelShader.glsl ../GameLevel.txt)
 
 set_source_files_properties( VertexShader.glsl PROPERTIES
         VS_SHADER_TYPE Vertex 
