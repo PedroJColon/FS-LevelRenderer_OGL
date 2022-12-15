@@ -21,10 +21,12 @@ layout(row_major) uniform UBO_DATA
 	ATTRIBUTES material;
 };
 
+// Values taken from our vertexattribpointers in our model header
 layout (location = 0) in vec3 local_pos;
 layout (location = 1) in vec3 uvw;
 layout (location = 2) in vec3 norm;
 
+// out values that will be used in our pixel shader
 out vec3 Normal;
 out vec3 outUvw;
 out vec3 pixel_pos;
