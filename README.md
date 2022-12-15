@@ -1,6 +1,7 @@
 # FS-LevelRenderer_OGL
-Full Sail Level Renderer project class
-
+## Full Sail Level Renderer Project 
+### Author: Pedro J Colon
+#### Credit goes for Gateware project to making this happen! https://gitlab.com/gateware-development/gateware
 
 Camera Controls:
 W - Forward
