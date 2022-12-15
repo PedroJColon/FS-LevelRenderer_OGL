@@ -2,8 +2,8 @@
 #define GATEWARE_ENABLE_CORE // All libraries need this
 #define GATEWARE_ENABLE_SYSTEM // Graphics libs require system level libraries
 #define GATEWARE_ENABLE_GRAPHICS // Enables all Graphics Libraries
-// TODO: Part 2a
 #define GATEWARE_ENABLE_MATH
+#define GATEWARE_ENABLE_INPUT
 // Ignore some GRAPHICS libraries we aren't going to use
 #define GATEWARE_DISABLE_GDIRECTX11SURFACE // we have another template for this
 #define GATEWARE_DISABLE_GDIRECTX12SURFACE // we have another template for this
@@ -44,6 +44,7 @@ int main()
 			Renderer renderer(win, ogl, levelFile);
 			while (+win.ProcessWindowEvents())
 			{
+				renderer.UpdateCamera();
 				glClearColor(clr[0], clr[1], clr[2], clr[3]);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				renderer.Render();

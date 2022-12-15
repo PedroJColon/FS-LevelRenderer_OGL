@@ -1,4 +1,3 @@
-
 namespace MD
 {
 	struct ATTRIBUTES
@@ -41,10 +40,8 @@ namespace MD
 		GLchar* vertexShaderSource = nullptr;
 
 		GW::MATH::GMATRIXF world = GW::MATH::GIdentityMatrixF;
-		// std::vector<ATTRIBUTES> materials;
-			
-		UBO_DATA uboData;
 
+		UBO_DATA uboData;
 		H2B::Parser readModelData;
 		GW::GRAPHICS::GOpenGLSurface ogl;
 
@@ -61,81 +58,79 @@ namespace MD
 			// Read matrix data (be sure to get line and read it using scanf
 			std::vector<float> worldValues;
 
-			//for (int i = 0; i < 3; i++)
-			//{
-			//	std::string getString;
-			//	getline(file, getString);
-			//	std::string matrixValues = getString.substr(getString.size() - 34, getString.rfind(')'));
+			for (int i = 0; i <= 3; i++)
+			{
+				std::string getString;
+				getline(file, getString, '(');
+				getline(file, getString);
+				std::string matrixValues = getString.substr(getString.size() - getString.size(), getString.rfind(')'));
+				std::string valueStr = matrixValues.substr(matrixValues.size() - matrixValues.size(), matrixValues.find_first_of(','));
+				float xValue = std::stof(valueStr);
+				worldValues.push_back(xValue);
 
-			//	std::string valueStr = matrixValues.substr(matrixValues.size() - 34, matrixValues.find_first_of(','));
-			//	valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			//	std::size_t strSize = valueStr.find('(');
-			//	valueStr = valueStr.substr(strSize, valueStr.size());
-			//	float xValue = std::stof(valueStr);
-			//	worldValues.push_back(xValue);
+				valueStr = matrixValues.substr(matrixValues.size() - 24, matrixValues.find_first_of(','));
+				valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
+				float yValue = std::stof(valueStr);
+				worldValues.push_back(yValue);
 
-			//	valueStr = matrixValues.substr(matrixValues.size() - 24, matrixValues.find_first_of(','));
-			//	valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			//	float yValue = std::stof(valueStr);
-			//	worldValues.push_back(yValue);
-
-			//	valueStr = matrixValues.substr(matrixValues.size() - 15, matrixValues.find_first_of(','));
-			//	valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			//	float zValue = std::stof(valueStr);
-			//	worldValues.push_back(zValue);
+				valueStr = matrixValues.substr(matrixValues.size() - 15, matrixValues.find_first_of(','));
+				valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
+				float zValue = std::stof(valueStr);
+				worldValues.push_back(zValue);
 
 
-			//	valueStr = matrixValues.substr(matrixValues.size() - 7, matrixValues.find_first_of(')'));
-			//	valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(')'));
-			//	float wValue = std::stof(valueStr);
-			//	worldValues.push_back(wValue);
-			//}
+				valueStr = matrixValues.substr(matrixValues.size() - 7, matrixValues.find_first_of(')'));
+				valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(')'));
+				float wValue = std::stof(valueStr);
+				worldValues.push_back(wValue);
+			}
 
-			//std::string getString;
-			//getline(file, getString);
-			//std::string matrixValues = getString.substr(getString.size() - 34, getString.rfind(')'));
+			/*std::string getString;
+			getline(file, getString, '(');
+			getline(file, getString);
+			std::string matrixValues = getString.substr(getString.size() - getString.size(), getString.rfind(')'));
 
-			//std::string valueStr = matrixValues.substr(matrixValues.size() - matrixValues.size(), matrixValues.find_first_of(','));
-			//valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			//float xValue = std::stof(valueStr);
-			//worldValues.push_back(xValue);
+			std::string valueStr = matrixValues.substr(matrixValues.size() - matrixValues.size(), matrixValues.find_first_of(','));
+			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
+			float xValue = std::stof(valueStr);
+			worldValues.push_back(xValue);
 
-			//valueStr = matrixValues.substr(matrixValues.size() - 24, matrixValues.find_first_of(','));
-			//valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			//float yValue = std::stof(valueStr);
-			//worldValues.push_back(yValue);
+			valueStr = matrixValues.substr(matrixValues.size() - 24, matrixValues.find_first_of(','));
+			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
+			float yValue = std::stof(valueStr);
+			worldValues.push_back(yValue);
 
-			//valueStr = matrixValues.substr(matrixValues.size() - 17, matrixValues.find_first_of(','));
-			//valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			//float zValue = std::stof(valueStr);
-			//worldValues.push_back(zValue);
+			valueStr = matrixValues.substr(matrixValues.size() - 17, matrixValues.find_first_of(','));
+			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
+			float zValue = std::stof(valueStr);
+			worldValues.push_back(zValue);
 
-			//valueStr = matrixValues.substr(matrixValues.size() - 8, matrixValues.find_first_of(')'));
-			//valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(')'));
-			//float wValue = std::stof(valueStr);
-			//worldValues.push_back(wValue);
+			valueStr = matrixValues.substr(matrixValues.size() - 8, matrixValues.find_first_of(')'));
+			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(')'));
+			float wValue = std::stof(valueStr);
+			worldValues.push_back(wValue);*/
 
-			//world.row1.x = worldValues[0];
-			//world.row1.y = worldValues[1];
-			//world.row1.z = worldValues[2];
-			//world.row1.w = worldValues[3];
+			world.row1.x = worldValues[0];
+			world.row1.y = worldValues[1];
+			world.row1.z = worldValues[2];
+			world.row1.w = worldValues[3];
 
-			//world.row2.x = worldValues[4];
-			//world.row2.y = worldValues[5];
-			//world.row2.z = worldValues[6];
-			//world.row2.w = worldValues[7];
+			world.row2.x = worldValues[4];
+			world.row2.y = worldValues[5];
+			world.row2.z = worldValues[6];
+			world.row2.w = worldValues[7];
 
-			//world.row3.x = worldValues[8];
-			//world.row3.y = worldValues[9];
-			//world.row3.z = worldValues[10];
-			//world.row3.w = worldValues[11];
+			world.row3.x = worldValues[8];
+			world.row3.y = worldValues[9];
+			world.row3.z = worldValues[10];
+			world.row3.w = worldValues[11];
 
-			//world.row4.x = worldValues[12];
-			//world.row4.y = worldValues[13];
-			//world.row4.z = worldValues[14];
-			//world.row4.w = worldValues[15];
+			world.row4.x = worldValues[12];
+			world.row4.y = worldValues[13];
+			world.row4.z = worldValues[14];
+			world.row4.w = worldValues[15];
 
-			world = GW::MATH::GIdentityMatrixF;
+			//world = GW::MATH::GIdentityMatrixF;
 
 			GW::MATH::GVECTORF lightColors = { 0.9f, 0.9f, 1.0f, 1.0f };
 			// Light Direction
@@ -149,7 +144,7 @@ namespace MD
 			LoadShaders(); // Load Shaders for model
 		}
 
-		void DrawModel()
+		void DrawModel(GW::MATH::GMATRIXF newView, GW::MATH::GMATRIXF newProj)
 		{
 			HF::glBindBuffer(GL_UNIFORM_BUFFER, UBO);
 			HF::glUseProgram(shaderExecutable);
@@ -165,6 +160,8 @@ namespace MD
 			{
 				GLvoid* ptr = HF::glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
 				uboData.material = (ATTRIBUTES&)readModelData.materials[i].attrib;
+				uboData.uViewMatrix = newView;
+				uboData.uProjMatrix = newProj;
 				memcpy(ptr, &uboData, sizeof(UBO_DATA));
 				HF::glUnmapBuffer(GL_UNIFORM_BUFFER);
 				glDrawElements(GL_TRIANGLES, readModelData.meshes[i].drawInfo.indexCount, GL_UNSIGNED_INT, (void*)(readModelData.meshes[i].drawInfo.indexOffset * sizeof(unsigned)));
