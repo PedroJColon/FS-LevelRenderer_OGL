@@ -162,11 +162,18 @@ public:
 		GW::MATH::GVECTORF cameraPos = { (xValue * FRAME_SPEED),(yValue * FRAME_SPEED),(zValue * FRAME_SPEED) };
 		// Rotation Matrix to effect our camera rotation
 		GW::MATH::GMATRIXF rotationMat = GW::MATH::GIdentityMatrixF;
+		GW::MATH::GMATRIXF pitchMat = GW::MATH::GIdentityMatrixF;
+		GW::MATH::GMATRIXF yawMat = GW::MATH::GIdentityMatrixF;
 		// Math done to change our rotation and translation for Camera
-		gMatrix.RotationYawPitchRollF(rotateX, rotateY, rotateZ, rotationMat);
+		gMatrix.RotateYGlobalF(pitchMat, rotateX, pitchMat);
+		
+		gMatrix.MultiplyMatrixF(pitchMat, Camera, Camera);
+		gMatrix.RotateXGlobalF(yawMat, rotateY, yawMat);
+		gMatrix.MultiplyMatrixF(yawMat, Camera, Camera);
+
+
+		//gMatrix.RotationYawPitchRollF(rotateX, rotateY, rotateZ, rotationMat);
 		gMatrix.TranslateGlobalF(Camera, cameraPos, Camera);
-		// Combine the two by multiplying the two
-		gMatrix.MultiplyMatrixF(Camera, rotationMat, Camera);
 		// Inverse our matrix to follow our view
 		gMatrix.InverseF(Camera, Camera);
 
@@ -211,5 +218,6 @@ private:
 				}
 			}
 		}
+		file.close();
 	}
 };
