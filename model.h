@@ -47,7 +47,7 @@ namespace MD
 
 	public:
 
-		Model(H2B::Parser _readModelData, GW::GRAPHICS::GOpenGLSurface _ogl, GW::MATH::GVECTORF _camPos, GW::MATH::GMATRIXF _viewMatrix, GW::MATH::GMATRIXF _projMatrix, std::ifstream& file, std::string vertexShader, std::string fragShader)
+		Model(H2B::Parser _readModelData, GW::GRAPHICS::GOpenGLSurface _ogl, GW::MATH::GVECTORF _lightDir, GW::MATH::GVECTORF _lightCol, GW::MATH::GVECTORF _lightAmb, GW::MATH::GVECTORF _camPos, GW::MATH::GMATRIXF _viewMatrix, GW::MATH::GMATRIXF _projMatrix, std::ifstream& file, std::string vertexShader, std::string fragShader)
 		{
 			ogl = _ogl;
 			readModelData = _readModelData;
@@ -106,13 +106,7 @@ namespace MD
 			world.row4.z = worldValues[14];
 			world.row4.w = worldValues[15];
 
-			GW::MATH::GVECTORF lightColors = { 0.9f, 0.9f, 1.0f, 1.0f };
-			// Light Direction
-			GW::MATH::GVECTORF lightDirection = { -1,-1,-2 };
-			GW::MATH::GVector::NormalizeF(lightDirection, lightDirection);
-			GW::MATH::GVECTORF lightnAmbRatio = { 25 / 255.f, 25 / 255.f, 35 / 255.f };
-
-			uboData = {lightDirection, lightColors, lightnAmbRatio, _camPos, _viewMatrix, _projMatrix, world, (ATTRIBUTES&)readModelData.materials[0].attrib};
+			uboData = {_lightDir, _lightCol, _lightAmb, _camPos, _viewMatrix, _projMatrix, world, (ATTRIBUTES&)readModelData.materials[0].attrib};
 
 			LoadModel(); // Load the drawing information from model
 			LoadShaders(); // Load Shaders for model

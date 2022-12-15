@@ -57,13 +57,6 @@ public:
 		float zFar = 100.f;
 		gMatrix.ProjectionOpenGLRHF(verticalFOV, aspectRatio, zNear, zFar, projMatrix);
 
-		// Light Colors
-		GW::MATH::GVECTORF lightColors = { 0.9f, 0.9f, 1.0f, 1.0f };
-		// Light Direction
-		GW::MATH::GVECTORF lightDirection = { -1,-1,-2 };
-		GW::MATH::GVector::NormalizeF(lightDirection, lightDirection);
-		GW::MATH::GVECTORF sunAmbRatio = { 50 / 255.f, 50 / 255.f, 50 / 255.f };
-
 		// Link Needed OpenGL API functions
 		HF::LoadExtensions(&ogl);
 		// In debug mode we link openGL errors to the console
@@ -212,7 +205,13 @@ private:
 					H2B::Parser parser;
 					if (parser.Parse(objectPath.c_str()))
 					{
-						MD::Model tempModel(parser, ogl, viewMatrix.row4, viewMatrix, projMatrix, file, vertShader, fragShader);
+						// Light Colors
+						GW::MATH::GVECTORF lightColors = { 0.4f, 0.4f, 1.0f, 1.0f };
+						// Light Direction
+						GW::MATH::GVECTORF lightDirection = { -1,-1,-1 };
+						GW::MATH::GVector::NormalizeF(lightDirection, lightDirection);
+						GW::MATH::GVECTORF lightAmbRatio = { 50 / 255.f, 50 / 255.f, 50 / 255.f };
+						MD::Model tempModel(parser, ogl, lightDirection, lightColors, lightAmbRatio, viewMatrix.row4, viewMatrix, projMatrix, file, vertShader, fragShader);
 						allModels.push_back(tempModel);
 					}
 				}
