@@ -130,8 +130,6 @@ namespace MD
 			world.row4.z = worldValues[14];
 			world.row4.w = worldValues[15];
 
-			//world = GW::MATH::GIdentityMatrixF;
-
 			GW::MATH::GVECTORF lightColors = { 0.9f, 0.9f, 1.0f, 1.0f };
 			// Light Direction
 			GW::MATH::GVECTORF lightDirection = { -1,-1,-2 };
@@ -158,6 +156,22 @@ namespace MD
 
 			for (int i = 0; i < readModelData.meshes.size(); i++)
 			{
+				if (readModelData.meshes[i].drawInfo.indexCount == 0)
+				{
+					for (int i = 0; i < readModelData.batches.size(); i++)
+					{
+						if (readModelData.batches[i].indexCount == readModelData.indexCount)
+						{
+							GLvoid* ptr = HF::glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+							uboData.material = (ATTRIBUTES&)readModelData.materials[i].attrib;
+							uboData.uViewMatrix = newView;
+							uboData.uProjMatrix = newProj;
+							memcpy(ptr, &uboData, sizeof(UBO_DATA));
+							HF::glUnmapBuffer(GL_UNIFORM_BUFFER);
+							glDrawElements(GL_TRIANGLES, readModelData.batches[i].indexCount, GL_UNSIGNED_INT, (void*)(readModelData.batches[i].indexOffset * sizeof(unsigned)));
+						}
+					}
+				}
 				GLvoid* ptr = HF::glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
 				uboData.material = (ATTRIBUTES&)readModelData.materials[i].attrib;
 				uboData.uViewMatrix = newView;
