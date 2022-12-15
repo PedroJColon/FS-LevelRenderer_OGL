@@ -54,13 +54,14 @@ namespace MD
 			vertexShaderSource = (GLchar*) vertexShader.c_str();
 			fragmentShaderSource = (GLchar*) fragShader.c_str();
 
-
 			// Read matrix data (be sure to get line and read it using scanf
 			std::vector<float> worldValues;
 
+
+			// loop through file to get our matrix values
 			for (int i = 0; i <= 3; i++)
 			{
-				std::string getString;
+				std::string getString = "";
 				getline(file, getString, '(');
 				getline(file, getString);
 				std::string matrixValues = getString.substr(getString.size() - getString.size(), getString.rfind(')'));
@@ -78,38 +79,13 @@ namespace MD
 				float zValue = std::stof(valueStr);
 				worldValues.push_back(zValue);
 
-
 				valueStr = matrixValues.substr(matrixValues.size() - 7, matrixValues.find_first_of(')'));
 				valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(')'));
 				float wValue = std::stof(valueStr);
 				worldValues.push_back(wValue);
 			}
 
-			/*std::string getString;
-			getline(file, getString, '(');
-			getline(file, getString);
-			std::string matrixValues = getString.substr(getString.size() - getString.size(), getString.rfind(')'));
-
-			std::string valueStr = matrixValues.substr(matrixValues.size() - matrixValues.size(), matrixValues.find_first_of(','));
-			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			float xValue = std::stof(valueStr);
-			worldValues.push_back(xValue);
-
-			valueStr = matrixValues.substr(matrixValues.size() - 24, matrixValues.find_first_of(','));
-			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			float yValue = std::stof(valueStr);
-			worldValues.push_back(yValue);
-
-			valueStr = matrixValues.substr(matrixValues.size() - 17, matrixValues.find_first_of(','));
-			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(','));
-			float zValue = std::stof(valueStr);
-			worldValues.push_back(zValue);
-
-			valueStr = matrixValues.substr(matrixValues.size() - 8, matrixValues.find_first_of(')'));
-			valueStr = valueStr.substr(valueStr.size() - valueStr.size(), valueStr.rfind(')'));
-			float wValue = std::stof(valueStr);
-			worldValues.push_back(wValue);*/
-
+			// Save our world values into world matrices
 			world.row1.x = worldValues[0];
 			world.row1.y = worldValues[1];
 			world.row1.z = worldValues[2];
@@ -144,6 +120,7 @@ namespace MD
 
 		void DrawModel(GW::MATH::GMATRIXF newView, GW::MATH::GMATRIXF newProj)
 		{
+			// Set up
 			HF::glBindBuffer(GL_UNIFORM_BUFFER, UBO);
 			HF::glUseProgram(shaderExecutable);
 
@@ -156,7 +133,7 @@ namespace MD
 
 			for (int i = 0; i < readModelData.meshes.size(); i++)
 			{
-				if (readModelData.meshes[i].drawInfo.indexCount == 0)
+				if (readModelData.meshes[i].drawInfo.indexCount == 0) // If a mmesh doesn't have an index count, we switch to using batch
 				{
 					for (int i = 0; i < readModelData.batches.size(); i++)
 					{
@@ -172,13 +149,17 @@ namespace MD
 						}
 					}
 				}
-				GLvoid* ptr = HF::glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-				uboData.material = (ATTRIBUTES&)readModelData.materials[i].attrib;
-				uboData.uViewMatrix = newView;
-				uboData.uProjMatrix = newProj;
-				memcpy(ptr, &uboData, sizeof(UBO_DATA));
-				HF::glUnmapBuffer(GL_UNIFORM_BUFFER);
-				glDrawElements(GL_TRIANGLES, readModelData.meshes[i].drawInfo.indexCount, GL_UNSIGNED_INT, (void*)(readModelData.meshes[i].drawInfo.indexOffset * sizeof(unsigned)));
+				else
+				{
+					GLvoid* ptr = HF::glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+					uboData.material = (ATTRIBUTES&)readModelData.materials[i].attrib;
+					uboData.uViewMatrix = newView;
+					uboData.uProjMatrix = newProj;
+					memcpy(ptr, &uboData, sizeof(UBO_DATA));
+					HF::glUnmapBuffer(GL_UNIFORM_BUFFER);
+					glDrawElements(GL_TRIANGLES, readModelData.meshes[i].drawInfo.indexCount, GL_UNSIGNED_INT, (void*)(readModelData.meshes[i].drawInfo.indexOffset * sizeof(unsigned)));
+				}
+
 			}
 
 			// some video cards(cough Intel) need this set back to zero or they won't display
@@ -215,7 +196,8 @@ namespace MD
 			HF::glGenBuffers(1, &VBO);
 			HF::glGenBuffers(1, &EBO);
 			HF::glGenBuffers(1, &UBO);
-
+			
+			// Bind buffers
 			HF::glBindVertexArray(VAO);
 			HF::glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			HF::glBufferData(GL_ARRAY_BUFFER, sizeof(H2B::VERTEX) * readModelData.vertexCount, readModelData.vertices.data(),GL_STATIC_DRAW);

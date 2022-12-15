@@ -30,7 +30,7 @@ class Renderer
 
 	// Timer
 	std::chrono::steady_clock::time_point startTime;
-	float delta;
+	float delta = 0;
 
 
 public:
@@ -62,7 +62,7 @@ public:
 		// Light Direction
 		GW::MATH::GVECTORF lightDirection = { -1,-1,-2 };
 		GW::MATH::GVector::NormalizeF(lightDirection, lightDirection);
-		GW::MATH::GVECTORF sunAmbRatio = { 25 / 255.f, 25 / 255.f, 35 / 255.f };
+		GW::MATH::GVECTORF sunAmbRatio = { 50 / 255.f, 50 / 255.f, 50 / 255.f };
 
 		// Link Needed OpenGL API functions
 		HF::LoadExtensions(&ogl);
@@ -94,12 +94,10 @@ public:
 		// Get the time duration to serve as our delta time
 		delta = std::chrono::duration_cast<std::chrono::duration<float>>(endTime - startTime).count();
 
-		// DONE: Part 4c
 		// Create our camera matrix (view copy)
 		GW::MATH::GMATRIXF Camera = { GW::MATH::GIdentityMatrixF };
 		// Inverse it to be able to change values
 		gMatrix.InverseF(viewMatrix, Camera);
-		// DONE: Part 4d
 		// const variables that do not need to be changed
 		const float CAMERA_SPEED = 1.5f;
 		const float CAMERA_ROT_SPEED = 0.35f;
@@ -159,9 +157,7 @@ public:
 		float rotateY = (65.f * (-mouseY * CAMERA_ROT_SPEED * FRAME_SPEED) / screenHeight) + (gp_rVertical * THUMB_ROT_SPEED * FRAME_SPEED);
 		float rotateZ = 0; // Set this zero cause we have no need for this
 
-		// DONE: Part 4e
-		// DONE: Part 4f 
-		// DONE: Part 4g
+
 		// Translation vector to effect our camera position
 		GW::MATH::GVECTORF cameraPos = { (xValue * FRAME_SPEED),(yValue * FRAME_SPEED),(zValue * FRAME_SPEED) };
 		// Rotation Matrix to effect our camera rotation
@@ -174,7 +170,6 @@ public:
 		// Inverse our matrix to follow our view
 		gMatrix.InverseF(Camera, Camera);
 
-		// DONE: Part 4c
 		// Copy our new matrix to the view matrix once all is done to update it
 		viewMatrix = Camera;
 
@@ -186,6 +181,7 @@ public:
 private:
 	void LoadLevel(std::string levelFile)
 	{
+		// Converts our shader files to strings so that we can load shaders within our mesh
 		std::string fragShader = HF::ShaderAsString("../Pixelshader.glsl");
 		std::string vertShader = HF::ShaderAsString("../Vertexshader.glsl");
 
@@ -197,16 +193,6 @@ private:
 			while (!file.eof())
 			{
 				getline(file, getString);
-				if (getString == "LIGHT")
-				{
-
-				}
-
-				if (getString == "CAMERA")
-				{
-
-				}
-
 				if (getString == "MESH")
 				{
 					std::string objectName;
@@ -223,7 +209,6 @@ private:
 						allModels.push_back(tempModel);
 					}
 				}
-				std::cout << getString << "\n";
 			}
 		}
 	}
