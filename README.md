@@ -4,6 +4,8 @@
 #### Credit goes for Gateware project to making this happen! https://gitlab.com/gateware-development/gateware
 
 Camera Controls:
+This uses flight/tank controls so a heads up on it being a bit janky.
+
 W - Forward
 A - Left
 S - Backward
